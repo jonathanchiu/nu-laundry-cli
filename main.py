@@ -5,7 +5,6 @@ from colorama import init as init_colorama, Fore, Style, Back
 from threading import Timer
 import time
 import pycurl
-import click
 import re
 import cmd
 import os
@@ -34,7 +33,7 @@ class Laundry(cmd.Cmd):
         cmd.Cmd.__init__(self)
 
         self.prompt         = "> "
-        self.timer_response = ['''"Hey fuck face, your laundry is done"''', '''"Get your fucking laundry right now"''']
+        self.timer_response = ['''Your laundry is finished.''', '''"Go get your laundry now before it's too late."''']
         self.timer          = None
         self.home           = "http://www.laundryview.com/lvs.php"
         self.room_url       = "http://classic.laundryview.com/laundry_room.php?view=c&lr="
