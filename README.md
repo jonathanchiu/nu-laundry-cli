@@ -31,3 +31,11 @@ stop - Stops any timer that was set previously
 
 ### Other
 Still needs a lot of work, and is probably very buggy at the moment.
+
+![intro msg](intro.png?raw=true "Optional Title")
+
+![dorm list](dorms.png?raw=true "Optional Title")
+
+![machine statuses](status.png?raw=true "Optional Title")
+
+![timer](timer.png?raw=true "Optional Title")
