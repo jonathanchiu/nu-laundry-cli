@@ -3,27 +3,12 @@ from bs4 import BeautifulSoup
 from tabulate import tabulate
 from colorama import init as init_colorama, Fore, Style, Back
 from threading import Timer
-import time
 import pycurl
 import re
 import cmd
 import os
 import shlex
 import string
-
-room_ids = {
-    1: '1343645', 2: '134368', 3: '134365', 4: '134367', 5: '134366',
-    6: '1343613', 7: '1343639', 8: '1343638', 9: '1343624', 10: '1343636',
-    11: '1343637', 12: '1343670', 13: '1343672', 14: '1343671', 15: '1343669',
-    16: '1343668', 17: '1343667', 18: '1343666', 19: '1343622', 20: '1343623',
-    21: '134369', 22: '1343646', 23: '1343647', 24: '1343648', 25: '1343619',
-    26: '1343611', 27: '1343612', 28: '1343620', 29: '1343614', 30: '1343655',
-    31: '1343656', 32: '1343629', 33: '1343630', 34: '1343615', 35: '1343631',
-    36: '1343644', 37: '134363', 38: '134362', 39: '134361', 40: '1343634',
-    41: '1343635', 42: '1343640', 43: '1343652', 44: '1343653', 45: '1343643',
-    46: '1343642', 47: '1343649', 48: '1343650', 49: '1343651', 50: '1343617',
-    51: '1343616'
-}
 
 class Laundry(cmd.Cmd):
     '''Why use laundryview.com when you can use this CLI? /s
@@ -38,6 +23,7 @@ class Laundry(cmd.Cmd):
         self.home           = "http://www.laundryview.com/lvs.php"
         self.room_url       = "http://classic.laundryview.com/laundry_room.php?view=c&lr="
         self.dorm_cache     = ""
+        self.dorm_ids       = {}
         self.version        = "v1.0"
         self.logo           = '''
           _  _    _   _             _                                 _             _  _
@@ -46,7 +32,7 @@ class Laundry(cmd.Cmd):
          |_|\_|   \___/   TS__[O]  |____| \__,_|   \_,_|  |_||_|  \__,_|   _|_|_   _|__/
         _|"""""|_|"""""| {======|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_| """"|
         "`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-' '''
-        self.intro          = self.logo + self.version
+        self.intro          = "\n\n\n" + self.logo + self.version + "\n\n\n"
 
 
 
@@ -56,7 +42,7 @@ class Laundry(cmd.Cmd):
         '''
 
         if param == 1:
-            url = self.room_url + room_ids[url]
+            url = self.room_url + self.dorm_ids[url]
 
         store = StringIO()
 
@@ -70,6 +56,19 @@ class Laundry(cmd.Cmd):
         content = store.getvalue()
         soup    = BeautifulSoup(content)
         return soup
+
+    def build_dorm_ids(self):
+        '''Compile dictionary of dorm numbers and their corresponding laundry
+        view ID
+        '''
+        soup  = self.chowder(self.home, 0)
+        dorms = soup.findAll(class_="a-room")
+        num   = 1
+
+        for dorm in dorms:
+            id                  = re.sub('[^0-9]','', dorm['href']).strip().encode("utf-8")
+            self.dorm_ids[num]  = id
+            num                += 1
 
     def do_dorms(self, line):
         '''
@@ -200,7 +199,7 @@ class Laundry(cmd.Cmd):
                         timer_set = 1
 
                         # Get the time remaining on the machine, convert it to int, convert it to seconds
-                        time_remaining = int(re.sub('[^0-9]', '', machine_status)) * 60
+                        sleep = int(re.sub('[^0-9]', '', machine_status)) * 60
                         print "Timer has been set for machine number {} with {}".format(machine_num, machine_status)
                         break
                     else:
@@ -215,9 +214,6 @@ class Laundry(cmd.Cmd):
                 '''
                 for response in self.timer_response:
                     os.system('say ' + response)
-
-            time_now_sec = time.time()
-            sleep        = time_now_sec + time_remaining
 
             # Start a thread that will call the alert function after the
             # remaining time on the laundry machine has passed
@@ -243,4 +239,5 @@ class Laundry(cmd.Cmd):
 
 if __name__ == '__main__':
     l = Laundry()
+    l.build_dorm_ids()
     l.cmdloop()

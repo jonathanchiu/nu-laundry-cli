@@ -7,7 +7,7 @@ A CLI for the laundry system at Northeastern University, which as a result, is a
 ### Setup
 I recommend setting up an alias in your .bash_profile, .zshrc, etc for this like so
 ```
-alias laundry="python ~/path/to/main.py"
+alias laundry="python /path/to/main.py"
 ```
 Be sure to install the dependencies like so (under the assumption that you have pip installed):
 ```
@@ -32,10 +32,18 @@ stop - Stops any timer that was set previously
 ### Other
 Still needs a lot of work, and is probably very buggy at the moment.
 
+ASCII art intro message for fun
+
 ![intro msg](intro.png?raw=true "Optional Title")
+
+Getting list of dorms that have laundry machines on campus
 
 ![dorm list](dorms.png?raw=true "Optional Title")
 
+Getting laundry machine statuses in West Village E (corresponding to dorm number 42)
+
 ![machine statuses](status.png?raw=true "Optional Title")
+
+Setting a timer for laundry machine 12 in West Village E
 
 ![timer](timer.png?raw=true "Optional Title")
