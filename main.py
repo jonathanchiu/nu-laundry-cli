@@ -238,6 +238,10 @@ class Laundry(cmd.Cmd):
         return True
 
 if __name__ == '__main__':
-    l = Laundry()
-    l.build_dorm_ids()
-    l.cmdloop()
+    try:
+        l = Laundry()
+        l.build_dorm_ids()
+        l.cmdloop()
+    except KeyboardInterrupt:
+        print "Goodbye! May your laundry forever be fresh and clean :)"
+        pass
