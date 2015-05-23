@@ -216,12 +216,15 @@ class Laundry(cmd.Cmd):
                     os.system('say ' + response)
 
             # Start a thread that will call the alert function after the
-            # remaining time on the laundry machine has passed
-            self.timer = Timer(5.0, alert)
+            # remaining time on the laundry machine has passed. Add compensation
+            # to the sleep time to account for extended laundry cycles.
+            compensation = (5 * 60)
+            self.timer = Timer(sleep + compensation, alert)
             self.timer.start()
 
     def do_stop(self, line):
-        '''stop - Stops any timer that was set
+        '''
+        stop - Stops any timer that was set
         '''
 
         '''Provides users with the functionality to stop a timer that they
@@ -233,6 +236,16 @@ class Laundry(cmd.Cmd):
             print "Timer has been stopped."
         else:
             print "No timer has been set to stop."
+
+    def do_play(self, line):
+        '''
+        play - Prints and plays the user's currently set alert message
+        '''
+
+        print self.timer_response
+
+        for response in self.timer_response:
+            os.system('say ' + response)
 
     def do_EOF(self, line):
         return True
