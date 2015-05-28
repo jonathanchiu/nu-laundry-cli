@@ -33,8 +33,14 @@ class Laundry(cmd.Cmd):
         _|"""""|_|"""""| {======|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_| """"|
         "`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-' '''
         self.intro          = "\n\n\n" + self.logo + self.version + "\n\n\n"
+        self.doc_header     = "Laundry commands (type help <topic>)"
 
 
+    def emptyline(self):
+        '''Override CMD module's default behavior such that pressing the <ENTER>
+        key doesn't repeat the last entered command
+        '''
+        pass
 
     def chowder(self, url, param):
         '''Given a URL, make a cURL request to get a page's contents and
@@ -103,7 +109,8 @@ class Laundry(cmd.Cmd):
 
     def do_status(self, s):
         '''
-        status <x> - Get status of all laundry machines in dorm number <x>
+        status <x> - Get status of all laundry machines in dorm building
+        number <x>
         '''
 
         '''Given a building #, get the status of all laundry machines for the
@@ -214,6 +221,7 @@ class Laundry(cmd.Cmd):
                 '''
                 for response in self.timer_response:
                     os.system('say ' + response)
+                    print response
 
             # Start a thread that will call the alert function after the
             # remaining time on the laundry machine has passed. Add compensation
@@ -246,9 +254,6 @@ class Laundry(cmd.Cmd):
 
         for response in self.timer_response:
             os.system('say ' + response)
-
-    def do_EOF(self, line):
-        return True
 
 if __name__ == '__main__':
     try:

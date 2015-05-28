@@ -30,7 +30,8 @@ stop - Stops any timer that was set previously
 * Tabulate
 
 ### Other
-Still needs a lot of work, and is probably very buggy at the moment.
+* Still needs a lot of work, and is probably very buggy at the moment.
+* Custom timer messages will only be set for that CLI session (if you exit the script, it will reset to the default messages).
 
 ASCII art intro message for fun
 
