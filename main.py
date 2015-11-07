@@ -10,21 +10,23 @@ import os
 import shlex
 import string
 
-class Laundry(cmd.Cmd):
+
+class Laundry(cmd.Cmd): 
     '''Why use laundryview.com when you can use this CLI? /s
     '''
 
     def __init__(self):
         cmd.Cmd.__init__(self)
 
-        self.prompt         = "> "
-        self.timer_response = ['''Your laundry is finished.''', '''"Go get your laundry now before it's too late."''']
-        self.timer          = None
-        self.home           = "http://www.laundryview.com/lvs.php"
-        self.room_url       = "http://classic.laundryview.com/laundry_room.php?view=c&lr="
-        self.dorm_cache     = ""
-        self.dorm_ids       = {}
-        self.version        = "v1.0"
+        self.prompt = "> "
+        self.timer_response = ['''Your laundry is finished.''',
+                               '''"Go get your laundry now before it's too late."''']
+        self.timer = None
+        self.home = "http://www.laundryview.com/lvs.php"
+        self.room_url = "http://classic.laundryview.com/laundry_room.php?view=c&lr="
+        self.dorm_cache = ""
+        self.dorm_ids = {}
+        self.version = "v1.0"
         self.logo           = '''
           _  _    _   _             _                                 _             _  _
          | \| |  | | | |    o O O  | |     __ _    _  _    _ _     __| |     _ _   | || |
@@ -32,9 +34,8 @@ class Laundry(cmd.Cmd):
          |_|\_|   \___/   TS__[O]  |____| \__,_|   \_,_|  |_||_|  \__,_|   _|_|_   _|__/
         _|"""""|_|"""""| {======|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_|"""""|_| """"|
         "`-0-0-'"`-0-0-'./o--000'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-'"`-0-0-' '''
-        self.intro          = "\n\n\n" + self.logo + self.version + "\n\n\n"
-        self.doc_header     = "Laundry commands (type help <topic>)"
-
+        self.intro = "\n\n\n" + self.logo + self.version + "\n\n\n"
+        self.doc_header = "Laundry commands (type help <topic>)"
 
     def emptyline(self):
         '''Override CMD module's default behavior such that pressing the <ENTER>
@@ -60,21 +61,21 @@ class Laundry(cmd.Cmd):
         c.perform()
 
         content = store.getvalue()
-        soup    = BeautifulSoup(content)
+        soup = BeautifulSoup(content)
         return soup
 
     def build_dorm_ids(self):
         '''Compile dictionary of dorm numbers and their corresponding laundry
         view ID
         '''
-        soup  = self.chowder(self.home, 0)
+        soup = self.chowder(self.home, 0)
         dorms = soup.findAll(class_="a-room")
-        num   = 1
+        num = 1
 
         for dorm in dorms:
-            id                  = re.sub('[^0-9]','', dorm['href']).strip().encode("utf-8")
-            self.dorm_ids[num]  = id
-            num                += 1
+            id = re.sub('[^0-9]', '', dorm['href']).strip().encode("utf-8")
+            self.dorm_ids[num] = id
+            num += 1
 
     def do_dorms(self, line):
         '''
@@ -89,15 +90,15 @@ class Laundry(cmd.Cmd):
         # for future queries of the dorm list
         if len(self.dorm_cache) == 0:
 
-            soup  = self.chowder(self.home, 0)
+            soup = self.chowder(self.home, 0)
             dorms = soup.findAll(class_="a-room")
-            num   = 1
-            data  = []
+            num = 1
+            data = []
 
             for dorm in dorms:
 
-                d       = ''.join(dorm.findAll(text=True)).strip().encode("utf-8")
-                id      = re.sub('[^0-9]','', dorm['href']).strip().encode("utf-8")
+                d = ''.join(dorm.findAll(text=True)).strip().encode("utf-8")
+                id = re.sub('[^0-9]', '', dorm['href']).strip().encode("utf-8")
                 headers = ["Building #", "Building Name"]
 
                 data.append([num, d])
@@ -124,10 +125,11 @@ class Laundry(cmd.Cmd):
         if (len(line) > 0 and line[0].isdigit()):
             soup = self.chowder(int(line[0]), 1)
 
-            dorm_name = soup.find(id="monitor-head").h2.contents[0].encode("utf-8")
-            machines  = soup.find(id="classic_monitor").findAll(class_="desc")
-            statuses  = soup.find(id="classic_monitor").findAll(class_="stat")
-            data      = []
+            dorm_name = soup.find(
+                id="monitor-head").h2.contents[0].encode("utf-8")
+            machines = soup.find(id="classic_monitor").findAll(class_="desc")
+            statuses = soup.find(id="classic_monitor").findAll(class_="stat")
+            data = []
 
             print "\n+{}+".format("-" * (len(dorm_name) + 2))
             print "| {} |".format(Back.CYAN + Fore.WHITE + dorm_name + Back.RESET + Fore.RESET)
@@ -153,7 +155,8 @@ class Laundry(cmd.Cmd):
         add at least one.
         '''
 
-        # shlex module provides really convenient splitting of quoted string args
+        # shlex module provides really convenient splitting of quoted string
+        # args
         line = shlex.split(s)
 
         if len(line) > 0:
@@ -177,11 +180,11 @@ class Laundry(cmd.Cmd):
         machine has finished its laundry cycle.
         '''
 
-        line                 = s.split()
-        timer_set            = 0
-        dorm_num             = int(line[0])
+        line = s.split()
+        timer_set = 0
+        dorm_num = int(line[0])
         machine_num_to_check = line[1].strip()
-        time_remaining       = None
+        time_remaining = None
 
         soup = self.chowder(dorm_num, 1)
         response = ""
@@ -205,7 +208,8 @@ class Laundry(cmd.Cmd):
                     if "remaining" in machine_status:
                         timer_set = 1
 
-                        # Get the time remaining on the machine, convert it to int, convert it to seconds
+                        # Get the time remaining on the machine, convert it to
+                        # int, convert it to seconds
                         sleep = int(re.sub('[^0-9]', '', machine_status)) * 60
                         print "Timer has been set for machine number {} with {}".format(machine_num, machine_status)
                         break
